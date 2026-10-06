@@ -1,0 +1,34 @@
+services:
+
+  restaurant-service:
+    build:
+      context: ./restaurant-service
+    container_name: restaurant-service
+    ports:
+      - "5002:5002"
+    environment:
+      PORT: 5002
+      DB_HOST: host.docker.internal
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: food_delivery_restaurant
+      DB_PORT: 3306
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    ports:
+      - "5003:5003"
+    environment:
+      PORT: 5003
+      DB_HOST: host.docker.internal
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: food_delivery_order_db
+      DB_PORT: 3306
+      RESTAURANT_SERVICE_URL: http://restaurant-service:5002
+    depends_on:
+      - restaurant-service
+    restart: unless-stopped
